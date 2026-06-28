@@ -63,7 +63,7 @@ tuiengine/
 │       ├── auth.ts            # modular account login/register screen wizard flow
 │       ├── admin.ts           # default administrator control panel layout
 │       └── components/        # base TUI wrappers (input field, chat log, scrolling log view)
-└── example/
+└── game/
     └── index.ts               # a simple real-time multiplayer movement arena & chat room demo
 ```
 

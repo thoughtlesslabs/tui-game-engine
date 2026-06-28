@@ -23,12 +23,12 @@ if (existsSync(CONFIG_PATH)) {
 // Determine target entry file
 let targetFile = process.env.TEST_TARGET || "";
 if (!targetFile) {
-  if (existsSync(join(process.cwd(), "example", "index.ts"))) {
-    targetFile = "example/index.ts";
+  if (existsSync(join(process.cwd(), "game", "index.ts"))) {
+    targetFile = "game/index.ts";
   } else if (existsSync(join(process.cwd(), "src", "index.ts"))) {
     targetFile = "src/index.ts";
   } else {
-    console.error(red("Could not find a valid entry file to test (example/index.ts or src/index.ts)."));
+    console.error(red("Could not find a valid entry file to test (game/index.ts or src/index.ts)."));
     process.exit(1);
   }
 }
