@@ -1,0 +1,11 @@
+node_modules/
+*.db
+config.json
+.DS_Store
+.gemini/
+data/
+host_key*
+admin_host_key*
+bin/cli.ts.test
+test-game/
+dist/

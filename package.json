@@ -1,0 +1,26 @@
+{
+  "name": "tuiengine-starter",
+  "version": "1.0.0",
+  "description": "Starter template for building real-time multiplayer TUI SSH & Web games using Bun and OpenTUI.",
+  "module": "src/index.ts",
+  "type": "module",
+  "private": true,
+  "scripts": {
+    "dev": "bun --hot src/index.ts",
+    "create": "bun bin/cli.ts",
+    "postinstall": "bun run scripts/patch-opentui.js"
+  },
+  "devDependencies": {
+    "@types/bun": "latest",
+    "@types/ssh2": "^1.15.5"
+  },
+  "peerDependencies": {
+    "typescript": "^5"
+  },
+  "dependencies": {
+    "@modelcontextprotocol/sdk": "^1.29.0",
+    "@opentui/core": "^0.4.2",
+    "@opentui/ssh": "^0.4.2",
+    "ssh2": "^1.17.0"
+  }
+}

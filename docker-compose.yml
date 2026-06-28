@@ -1,0 +1,35 @@
+version: '3.8'
+
+services:
+  game-server:
+    build: .
+    container_name: tui-game-server
+    restart: unless-stopped
+    stop_grace_period: 45s
+    ports:
+      - "22:2222"
+      - "127.0.0.1:2223:2223"
+    volumes:
+      - ./data:/app/data
+    environment:
+      - START_MODE=game
+      - NODE_ENV=production
+      - CONFIG_PATH=/app/data/config.json
+      - HOST_KEY_PATH=/app/data/host_key
+      - ADMIN_HOST_KEY_PATH=/app/data/admin_host_key
+
+  web-server:
+    build: .
+    container_name: tui-web-server
+    restart: unless-stopped
+    ports:
+      - "127.0.0.1:3000:3000"
+    volumes:
+      - ./data:/app/data
+    environment:
+      - START_MODE=web
+      - GAME_SSH_HOST=game-server
+      - NODE_ENV=production
+      - CONFIG_PATH=/app/data/config.json
+    depends_on:
+      - game-server
