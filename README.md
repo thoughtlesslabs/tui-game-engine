@@ -117,6 +117,27 @@ ssh localhost -p 2223
 
 ---
 
+## Docker Deployment
+
+To launch your game stack in a production environment (such as a VPS or dedicated server) using Docker:
+
+### 1. Build and Run the Stack
+Run Docker Compose in detached mode:
+```bash
+docker compose up -d --build
+```
+This builds your TUI and Web containers, binds the ports, and starts the game loop automatically.
+
+### 2. Connection Settings (Production Defaults)
+* **Web Client**: Open `http://your-server-ip:3000` (can be reverse-proxied using Nginx or Caddy).
+* **Game SSH Terminal**: Run `ssh your-server-ip` (mapped to port 22 inside the container for convenience).
+* **Admin Dashboard SSH**: Run `ssh localhost -p 2223` on the host server. (Port 2223 is bound strictly to `127.0.0.1` for security).
+
+### 3. Data Persistence
+All persistent assets—SQLite databases, log audit trails, server settings (`config.json`), and SSH host keys—are stored inside the host `./data` directory (which maps to `/app/data` inside the containers) and will persist across container updates.
+
+---
+
 ## Developer Quickstart: Building Your Own Game
 
 To start writing your own game, import `TuiEngine` and configure it in your entry file (e.g. `index.ts`):
