@@ -8,6 +8,7 @@
   "scripts": {
     "dev": "bun --hot src/index.ts",
     "create": "bun bin/cli.ts",
+    "test-boot": "bun run scripts/test-boot.ts",
     "postinstall": "bun run scripts/patch-opentui.js"
   },
   "devDependencies": {
