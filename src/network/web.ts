@@ -14,6 +14,7 @@ function getWebPageHTML(title: string, description: string): string {
   <title>${title} - Web Client</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
   <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/mshaugh/nerdfont-webfonts@v3.0.0/build/firacode-nerd-font.css" />
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/xterm@5.3.0/css/xterm.css" />
   <script src="https://cdn.jsdelivr.net/npm/xterm@5.3.0/lib/xterm.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/xterm-addon-fit@0.8.0/lib/xterm-addon-fit.js"></script>
@@ -263,7 +264,7 @@ function getWebPageHTML(title: string, description: string): string {
   <script>
     const term = new Terminal({
       cursorBlink: true,
-      fontFamily: 'Courier New, Courier, monospace',
+      fontFamily: '"FiraCode Nerd Font", "Courier New", Courier, monospace',
       fontSize: 16,
       theme: {
         background: '#000000',
