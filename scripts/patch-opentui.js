@@ -70,6 +70,41 @@ if (fs.existsSync(filePath)) {
     console.log('Raw channel is already exposed on session.');
   }
 
+  // 4. Patch createSessionStreams to prevent input freezing
+  if (content.includes('let inputPaused = false;')) {
+    console.log('Patching @opentui/ssh/index.js to fix input freezing (setRawMode mock and no-pause)...');
+    content = content.replace(
+      `  let inputPaused = false;
+  const stdin = new Readable({
+    read() {
+      if (!inputPaused)
+        return;
+      inputPaused = false;
+      channel.resume();
+    }
+  });
+  const onData = (chunk) => {
+    onActivity?.();
+    if (!stdin.push(chunk) && !inputPaused) {
+      inputPaused = true;
+      channel.pause();
+    }
+  };`,
+      `  const stdin = new Readable({
+    read() {}
+  });
+  stdin.setRawMode = function(mode) { return this; };
+  stdin.isRaw = true;
+  const onData = (chunk) => {
+    onActivity?.();
+    stdin.push(chunk);
+  };`
+    );
+    dirty = true;
+  } else {
+    console.log('Input freezing patch is already applied or source changed.');
+  }
+
   if (dirty) {
     fs.writeFileSync(filePath, content, 'utf8');
     console.log('Successfully applied all patches to @opentui/ssh/index.js!');

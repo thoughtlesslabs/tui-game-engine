@@ -42,3 +42,14 @@ SQLite can be a significant bottleneck in real-time environments if not handled 
 ### ⚡ Query Optimization
 * **Prepared Statements**: Prepare and compile SQL statements at startup instead of dynamically building raw SQL strings on every transaction.
 * **Concurrency**: Rely on Bun's SQLite WAL mode and busy timeouts configured by the client. Keep transactions database-only and modify in-memory game states outside the transaction block to prevent state desyncs on lock failures.
+
+---
+
+## 4. Visual Aesthetics & Graphic-Rich TUIs (Gridland Style)
+
+To wow users and match high-quality games (like Gridland), always build visually striking terminals:
+* **Custom Themes**: Define vivid, coordinated HSL/HEX color schemes (e.g. bright cyan/magenta accents on deep slate backdrops) instead of standard terminal colors.
+* **Dynamic Border & Title Layouts**: Use double-line borders, rounded box styles, or custom styling states to create modular "window panels" resembling an arcade machine or interactive GUI.
+* **Block Graphics**: Utilize Unicode block-drawing characters (`█`, `▓`, `▒`, `░`, `▄`, `▀`) to construct game boards, slider cards, progress bars, custom icons, or visual grids.
+* **Focus Micro-Animations**: Style buttons, text, and selections dynamically on hover or focus (e.g. changing border colors or prefixing selections with custom pointers like `▶`).
+
