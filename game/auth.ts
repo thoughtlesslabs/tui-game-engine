@@ -1,0 +1,279 @@
+import { 
+  BoxRenderable, 
+  TextRenderable, 
+  t, 
+  green, 
+  red, 
+  yellow, 
+  magenta, 
+  cyan, 
+  blue, 
+  bold, 
+  dim,
+  StyledText, 
+  type RenderContext 
+} from "@opentui/core";
+import { 
+  ChatInputComponent, 
+  getAccountByUsername, 
+  createAccount 
+} from "../src/index";
+
+export type AuthWizardState = 
+  | "choose-auth"
+  | "enter-user-login"
+  | "enter-pass-login"
+  | "enter-user-reg"
+  | "enter-pass-reg"
+  | "authenticated";
+
+export class AuthWizard {
+  private ctx: RenderContext;
+  private cols: number;
+  private rows: number;
+  private state: AuthWizardState = "choose-auth";
+  private tempUsername = "";
+  private errorMessage = "";
+  private onAuthenticated: (accountId: string, username: string) => void;
+  private onExit: () => void;
+
+  // Renderables
+  public box: BoxRenderable;
+  private textElement: TextRenderable;
+  private inputField: ChatInputComponent;
+
+  constructor(
+    ctx: RenderContext,
+    cols: number,
+    rows: number,
+    onAuthenticated: (accountId: string, username: string) => void,
+    onExit: () => void
+  ) {
+    this.ctx = ctx;
+    this.cols = cols;
+    this.rows = rows;
+    this.onAuthenticated = onAuthenticated;
+    this.onExit = onExit;
+
+    this.box = new BoxRenderable(ctx, {
+      width: 60,
+      height: 15,
+      border: true,
+      borderColor: "#38bdf8", // Clean Sky Blue instead of generic green
+      title: " Account Login & Setup ",
+      titleAlignment: "center",
+      marginTop: 5,
+      marginLeft: Math.max(1, Math.floor((cols - 60) / 2))
+    });
+
+    this.textElement = new TextRenderable(ctx, {
+      width: "100%",
+      height: 9,
+      paddingLeft: 2,
+      paddingTop: 1
+    });
+    this.box.add(this.textElement);
+
+    this.inputField = new ChatInputComponent(ctx, {
+      width: "100%",
+      height: 3,
+      title: " Input Terminal ",
+      placeholder: "Type option, username, or command..."
+    }, (text) => this.handleInput(text));
+
+    this.box.add(this.inputField);
+    this.updateWizardText();
+  }
+
+  public getInputField(): ChatInputComponent {
+    return this.inputField;
+  }
+
+  public handleInput(text: string) {
+    this.errorMessage = "";
+    const clean = text.trim();
+
+    // Global escape/exit command
+    if (clean.toLowerCase() === "/exit" || clean.toLowerCase() === "/quit") {
+      this.onExit();
+      return;
+    }
+
+    // Global back/cancel command
+    if (clean.toLowerCase() === "/back" || clean.toLowerCase() === "/cancel") {
+      this.state = "choose-auth";
+      this.tempUsername = "";
+      this.errorMessage = "";
+      this.updateWizardText();
+      return;
+    }
+
+    switch (this.state) {
+      case "choose-auth":
+        if (clean === "1") {
+          this.state = "enter-user-login";
+        } else if (clean === "2") {
+          this.state = "enter-user-reg";
+        } else if (clean === "3") {
+          this.onExit();
+          return;
+        } else {
+          this.errorMessage = "Invalid selection. Please enter 1, 2, or 3.";
+        }
+        break;
+
+      case "enter-user-login":
+        if (!clean) {
+          this.errorMessage = "Username cannot be empty.";
+        } else {
+          this.tempUsername = clean;
+          this.state = "enter-pass-login";
+        }
+        break;
+
+      case "enter-pass-login":
+        this.verifyLogin(this.tempUsername, text);
+        break;
+
+      case "enter-user-reg":
+        if (!/^[a-zA-Z0-9_]{3,16}$/.test(clean)) {
+          this.errorMessage = "Username must be 3-16 chars (letters/numbers/underscores).";
+        } else {
+          const existing = getAccountByUsername(clean);
+          if (existing) {
+            this.errorMessage = "Username already exists.";
+          } else {
+            this.tempUsername = clean;
+            this.state = "enter-pass-reg";
+          }
+        }
+        break;
+
+      case "enter-pass-reg":
+        if (text.length < 4 || text.length > 32) {
+          this.errorMessage = "Password must be 4-32 characters.";
+        } else {
+          this.registerAccount(this.tempUsername, text);
+        }
+        break;
+    }
+
+    this.updateWizardText();
+  }
+
+  private async verifyLogin(username: string, pass: string) {
+    const acc = getAccountByUsername(username);
+    if (!acc) {
+      this.errorMessage = "Account not found. Type /back to start over.";
+      this.state = "enter-user-login";
+      this.updateWizardText();
+      return;
+    }
+
+    const ok = acc.password_hash && await Bun.password.verify(pass, acc.password_hash);
+    if (!ok) {
+      this.errorMessage = "Incorrect password. Type /back to start over.";
+      this.updateWizardText();
+      return;
+    }
+
+    // Success
+    this.state = "authenticated";
+    this.onAuthenticated(acc.id, acc.username);
+  }
+
+  private async registerAccount(username: string, pass: string) {
+    try {
+      const acc = await createAccount(username, pass);
+      this.state = "authenticated";
+      this.onAuthenticated(acc.id, acc.username);
+    } catch (err: any) {
+      this.errorMessage = err.message || "Registration failed.";
+      this.state = "choose-auth";
+      this.updateWizardText();
+    }
+  }
+
+  public updateWizardText() {
+    let content: any = t``;
+    const errStr: any = this.errorMessage ? t`\nError: ${red(bold(this.errorMessage))}` : t``;
+
+    switch (this.state) {
+      case "choose-auth":
+        content = t`
+${cyan(bold("=== TuiCraft Game Terminal ==="))}
+
+Welcome, adventurer! Please authenticate to join the realm.
+
+  ${magenta("1.")} Log into an existing account
+  ${magenta("2.")} Register a new account
+  ${magenta("3.")} Disconnect / Exit
+
+Select an option by typing ${cyan("1")}, ${cyan("2")}, or ${cyan("3")}.
+        `;
+        break;
+
+      case "enter-user-login":
+        content = t`
+${cyan(bold("=== Account Login ==="))}
+
+Enter your account ${green("username")} below:
+        `;
+        break;
+
+      case "enter-pass-login":
+        content = t`
+${cyan(bold("=== Account Login ==="))}
+
+Logging in as: ${yellow("@" + this.tempUsername)}
+Please enter your account ${green("password")} below:
+        `;
+        break;
+
+      case "enter-user-reg":
+        content = t`
+${cyan(bold("=== Create New Account ==="))}
+
+Enter your desired ${green("username")} below:
+${dim("(3-16 characters: letters, numbers, underscores)")}
+        `;
+        break;
+
+      case "enter-pass-reg":
+        content = t`
+${cyan(bold("=== Create New Account ==="))}
+
+Registering as: ${yellow("@" + this.tempUsername)}
+Please enter a secure ${green("password")} below:
+${dim("(4-32 characters)")}
+        `;
+        break;
+
+      case "authenticated":
+        content = t`
+${green(bold("✓ Authenticating session... Welcome to the realm!"))}
+        `;
+        break;
+    }
+
+    // Add navigation help command footer
+    let footer = t``;
+    if (this.state !== "choose-auth" && this.state !== "authenticated") {
+      footer = t`
+${dim("------------------------------------------------------------")}
+${yellow("Navigation:")} Type ${bold("/back")} to go back  |  Type ${bold("/exit")} to exit
+`;
+    } else if (this.state === "choose-auth") {
+      footer = t`
+${dim("------------------------------------------------------------")}
+${yellow("Navigation:")} Type ${bold("/exit")} to disconnect
+`;
+    }
+
+    this.textElement.content = new StyledText([
+      ...content.chunks,
+      ...errStr.chunks,
+      ...footer.chunks
+    ]);
+  }
+}

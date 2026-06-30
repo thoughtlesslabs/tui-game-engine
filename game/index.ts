@@ -1,6 +1,5 @@
 import { 
   TuiEngine, 
-  AuthWizard, 
   LayoutSizer, 
   ChatInputComponent, 
   ChatLogComponent, 
@@ -11,6 +10,7 @@ import {
   logChatMessage,
   loadConfig
 } from "../src/index";
+import { AuthWizard } from "./auth";
 import { 
   BoxRenderable, 
   TextRenderable, 
@@ -248,6 +248,8 @@ function handlePlayerSession(session: any) {
 
       // Start Game UI
       initGameScreen();
+    }, () => {
+      session.end();
     });
 
     renderer.root.add(authWizard.box);
