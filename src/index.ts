@@ -41,6 +41,7 @@ export { THEMES, getTheme, createThemeStyles, type GameTheme } from "./tui/theme
 export { ChatInputComponent } from "./tui/components/input";
 export { LogComponent, ChatLogComponent, type ChatLogMessage } from "./tui/components/log";
 export { AuthWizard, type AuthWizardState } from "./tui/auth";
+export { TuiBillingWizard } from "./tui/components/billing";
 export { LayoutSizer } from "./tui/layout";
 export { handleAdminSession, maintenanceTimeLeft } from "./tui/admin";
 

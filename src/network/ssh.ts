@@ -3,6 +3,8 @@ import { loadConfig, saveConfig } from "../config";
 import { dirname } from "path";
 import { mkdirSync } from "fs";
 
+export const activeSshSessions = new Set<any>();
+
 export async function startSshServers(
   onPlayerSession: (session: any) => void,
   onAdminSession: (session: any) => void
@@ -32,6 +34,10 @@ export async function startSshServers(
     idleTimeout: "30m",
     startupBanner: true
   }).serve((session) => {
+    activeSshSessions.add(session);
+    session.onClose(() => {
+      activeSshSessions.delete(session);
+    });
     onPlayerSession(session);
   });
 

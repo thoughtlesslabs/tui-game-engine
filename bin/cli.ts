@@ -20,12 +20,40 @@ console.log(magenta(bold(`
    ╚═╝    ╚═════╝ ╚═╝╚══════╝╚═╝  ╚═══╝ ╚═════╝ ╚═╝╚═╝  ╚═══╝╚══════╝
 `)));
 
+const isBillingInit = process.argv.includes("billing-init");
 const isPublish = process.argv.includes("publish");
 
-if (isPublish) {
+if (isBillingInit) {
+  await initBilling();
+} else if (isPublish) {
   await publish();
 } else {
   await scaffold();
+}
+
+async function initBilling() {
+  console.log(cyan(bold("💳 Tuicraft Billing Initialization Wizard\n")));
+  const envPath = join(process.cwd(), ".env");
+  
+  if (existsSync(envPath)) {
+    console.log(yellow("⚠️  A .env file already exists in the current directory."));
+    const confirm = prompt("Would you like to overwrite it? (y/N): ", "n");
+    if (confirm?.toLowerCase() !== "y") {
+      console.log(red("Aborted."));
+      return;
+    }
+  }
+
+  const envTemplate = `# Tuicraft Stripe Monetization Key Pairs
+STRIPE_SECRET_KEY=sk_test_placeholder_key
+STRIPE_PRICE_ID=price_placeholder_id
+# Set to true to test container resource scaling without Stripe charges
+ADMIN_BYPASS_BILLING=false
+`;
+
+  writeFileSync(envPath, envTemplate, "utf-8");
+  console.log(green("🎉 Successfully created template .env file!"));
+  console.log(dim("Configure your Stripe private secret key and product Price ID to get started.\n"));
 }
 
 async function publish() {

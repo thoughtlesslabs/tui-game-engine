@@ -9,12 +9,14 @@
     "dev": "bun --hot game/index.ts",
     "create": "bun bin/cli.ts",
     "publish": "bun bin/cli.ts publish",
+    "billing-init": "bun bin/cli.ts billing-init",
     "test-boot": "bun run scripts/test-boot.ts",
     "postinstall": "bun run scripts/patch-opentui.js"
   },
   "devDependencies": {
     "@types/bun": "latest",
-    "@types/ssh2": "^1.15.5"
+    "@types/ssh2": "^1.15.5",
+    "@types/qrcode": "^1.5.5"
   },
   "peerDependencies": {
     "typescript": "^5"
@@ -23,6 +25,7 @@
     "@modelcontextprotocol/sdk": "^1.29.0",
     "@opentui/core": "^0.4.2",
     "@opentui/ssh": "^0.4.2",
+    "qrcode": "^1.5.3",
     "ssh2": "^1.17.0"
   }
 }
