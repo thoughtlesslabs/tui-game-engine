@@ -260,12 +260,12 @@ ${green(bold("✓ Authenticating session... Welcome to the realm!"))}
     let footer = t``;
     if (this.state !== "choose-auth" && this.state !== "authenticated") {
       footer = t`
-${dim("------------------------------------------------------------")}
+${dim("─".repeat(56))}
 ${yellow("Navigation:")} Type ${bold("/back")} to go back  |  Type ${bold("/exit")} to exit
 `;
     } else if (this.state === "choose-auth") {
       footer = t`
-${dim("------------------------------------------------------------")}
+${dim("─".repeat(56))}
 ${yellow("Navigation:")} Type ${bold("/exit")} to disconnect
 `;
     }
