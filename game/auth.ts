@@ -69,7 +69,7 @@ export class AuthWizard {
     this.textElement = new TextRenderable(ctx, {
       width: "100%",
       height: 9,
-      paddingLeft: 2,
+      paddingLeft: 0,
       paddingTop: 1
     });
     this.box.add(this.textElement);
@@ -196,62 +196,62 @@ export class AuthWizard {
 
   public updateWizardText() {
     let content: any = t``;
-    const errStr: any = this.errorMessage ? t`\nError: ${red(bold(this.errorMessage))}` : t``;
+    const errStr: any = this.errorMessage ? t`\n  Error: ${red(bold(this.errorMessage))}` : t``;
 
     switch (this.state) {
       case "choose-auth":
         content = t`
-${cyan(bold("=== TuiCraft Game Terminal ==="))}
+  ${cyan(bold("=== TuiCraft Game Terminal ==="))}
 
-Welcome, adventurer! Please authenticate to join the realm.
+  Welcome, adventurer! Please authenticate to join the realm.
 
-  ${magenta("1.")} Log into an existing account
-  ${magenta("2.")} Register a new account
-  ${magenta("3.")} Disconnect / Exit
+    ${magenta("1.")} Log into an existing account
+    ${magenta("2.")} Register a new account
+    ${magenta("3.")} Disconnect / Exit
 
-Select an option by typing ${cyan("1")}, ${cyan("2")}, or ${cyan("3")}.
+  Select an option by typing ${cyan("1")}, ${cyan("2")}, or ${cyan("3")}.
         `;
         break;
 
       case "enter-user-login":
         content = t`
-${cyan(bold("=== Account Login ==="))}
+  ${cyan(bold("=== Account Login ==="))}
 
-Enter your account ${green("username")} below:
+  Enter your account ${green("username")} below:
         `;
         break;
 
       case "enter-pass-login":
         content = t`
-${cyan(bold("=== Account Login ==="))}
+  ${cyan(bold("=== Account Login ==="))}
 
-Logging in as: ${yellow("@" + this.tempUsername)}
-Please enter your account ${green("password")} below:
+  Logging in as: ${yellow("@" + this.tempUsername)}
+  Please enter your account ${green("password")} below:
         `;
         break;
 
       case "enter-user-reg":
         content = t`
-${cyan(bold("=== Create New Account ==="))}
+  ${cyan(bold("=== Create New Account ==="))}
 
-Enter your desired ${green("username")} below:
-${dim("(3-16 characters: letters, numbers, underscores)")}
+  Enter your desired ${green("username")} below:
+  ${dim("(3-16 characters: letters, numbers, underscores)")}
         `;
         break;
 
       case "enter-pass-reg":
         content = t`
-${cyan(bold("=== Create New Account ==="))}
+  ${cyan(bold("=== Create New Account ==="))}
 
-Registering as: ${yellow("@" + this.tempUsername)}
-Please enter a secure ${green("password")} below:
-${dim("(4-32 characters)")}
+  Registering as: ${yellow("@" + this.tempUsername)}
+  Please enter a secure ${green("password")} below:
+  ${dim("(4-32 characters)")}
         `;
         break;
 
       case "authenticated":
         content = t`
-${green(bold("✓ Authenticating session... Welcome to the realm!"))}
+  ${green(bold("✓ Authenticating session... Welcome to the realm!"))}
         `;
         break;
     }
@@ -260,13 +260,13 @@ ${green(bold("✓ Authenticating session... Welcome to the realm!"))}
     let footer = t``;
     if (this.state !== "choose-auth" && this.state !== "authenticated") {
       footer = t`
-${dim("─".repeat(56))}
-${yellow("Navigation:")} Type ${bold("/back")} to go back  |  Type ${bold("/exit")} to exit
+  ${dim("─".repeat(56))}
+  ${yellow("Navigation:")} Type ${bold("/back")} to go back  |  Type ${bold("/exit")} to exit
 `;
     } else if (this.state === "choose-auth") {
       footer = t`
-${dim("─".repeat(56))}
-${yellow("Navigation:")} Type ${bold("/exit")} to disconnect
+  ${dim("─".repeat(56))}
+  ${yellow("Navigation:")} Type ${bold("/exit")} to disconnect
 `;
     }
 

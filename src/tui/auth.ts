@@ -84,7 +84,7 @@ export class AuthWizard {
     this.textElement = new TextRenderable(ctx, {
       width: "100%",
       height: 9,
-      paddingLeft: 2,
+      paddingLeft: 0,
       paddingTop: 1
     });
     this.box.add(this.textElement);
@@ -193,60 +193,60 @@ export class AuthWizard {
 
   public updateWizardText() {
     let content: any = t``;
-    const errStr: any = this.errorMessage ? t`\nError: ${red(bold(this.errorMessage))}` : t``;
+    const errStr: any = this.errorMessage ? t`\n  Error: ${red(bold(this.errorMessage))}` : t``;
 
     switch (this.state) {
       case "choose-auth":
         content = t`
-Welcome to the SSH Terminal Console Game!
+  Welcome to the SSH Terminal Console Game!
 
-Please choose an option:
-  ${green("1.")} Log into an existing account
-  ${green("2.")} Register a new account
+  Please choose an option:
+    ${green("1.")} Log into an existing account
+    ${green("2.")} Register a new account
 
-Type ${green("1")} or ${green("2")} in the input box below.
+  Type ${green("1")} or ${green("2")} in the input box below.
         `;
         break;
 
       case "enter-user-login":
         content = t`
-[LOGIN WORKFLOW]
+  [LOGIN WORKFLOW]
 
-Please enter your account ${cyan("username")} below:
+  Please enter your account ${cyan("username")} below:
         `;
         break;
 
       case "enter-pass-login":
         content = t`
-[LOGIN WORKFLOW]
+  [LOGIN WORKFLOW]
 
-Logging in as: ${green(this.tempUsername)}
-Please enter your account ${cyan("password")} below:
+  Logging in as: ${green(this.tempUsername)}
+  Please enter your account ${cyan("password")} below:
         `;
         break;
 
       case "enter-user-reg":
         content = t`
-[REGISTRATION WORKFLOW]
+  [REGISTRATION WORKFLOW]
 
-Please enter your desired ${cyan("username")} below:
-(3-16 characters, letters, numbers, underscores only)
+  Please enter your desired ${cyan("username")} below:
+  (3-16 characters, letters, numbers, underscores only)
         `;
         break;
 
       case "enter-pass-reg":
         content = t`
-[REGISTRATION WORKFLOW]
+  [REGISTRATION WORKFLOW]
 
-Creating account: ${green(this.tempUsername)}
-Please enter a secure ${cyan("password")} below:
-(4-32 characters)
+  Creating account: ${green(this.tempUsername)}
+  Please enter a secure ${cyan("password")} below:
+  (4-32 characters)
         `;
         break;
 
       case "authenticated":
         content = t`
-Authenticating session...
+  Authenticating session...
         `;
         break;
     }

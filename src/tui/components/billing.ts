@@ -43,7 +43,7 @@ export class TuiBillingWizard {
     this.textElement = new TextRenderable(ctx, {
       width: "100%",
       height: "100%",
-      paddingLeft: 2,
+      paddingLeft: 0,
       paddingTop: 0 // No padding top to save vertical space
     });
     this.box.add(this.textElement);
@@ -78,8 +78,8 @@ export class TuiBillingWizard {
         qrLines.push(line);
       }
 
-      // Center the lines inside the 52-character inner width (56 - 2 borders - 2 padding)
-      const innerWidth = 52;
+      // Center the lines inside the 54-character inner width (56 - 2 borders)
+      const innerWidth = 54;
       const qrWidth = size + 4; // size + 4 modules
       const leftPad = Math.max(0, Math.floor((innerWidth - qrWidth) / 2));
       const padStr = " ".repeat(leftPad);
@@ -87,13 +87,13 @@ export class TuiBillingWizard {
       const paddedQrText = qrLines.map(line => padStr + line).join("\n");
       const urlText = cyan(url);
 
-      this.textElement.content = t`Scan QR Code to pay securely via Stripe:
+      this.textElement.content = t`  Scan QR Code to pay securely via Stripe:
 ${paddedQrText}
-Link: ${urlText}
-Status: Awaiting payment... [ESC to cancel]`;
+  Link: ${urlText}
+  Status: Awaiting payment... [ESC to cancel]`;
       this.ctx.requestRender();
     } catch (e: any) {
-      this.textElement.content = `Error generating QR code: ${e.message}\n\nPlease click link: ${url}`;
+      this.textElement.content = `  Error generating QR code: ${e.message}\n\n  Please click link: ${url}`;
       this.ctx.requestRender();
     }
   }
