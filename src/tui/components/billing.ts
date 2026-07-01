@@ -1,4 +1,4 @@
-import { BoxRenderable, TextRenderable, type RenderContext } from "@opentui/core";
+import { BoxRenderable, TextRenderable, StyledText, t, cyan, bold, type RenderContext } from "@opentui/core";
 import QRCode from "qrcode";
 
 export class TuiBillingWizard {
@@ -26,8 +26,8 @@ export class TuiBillingWizard {
     this.checkStatus = options.checkStatus;
     this.onSuccess = onSuccess;
 
-    const width = 62;
-    const height = 18;
+    const width = 56;
+    const height = 21; // Exactly fits 19 content lines + 2 borders
 
     this.box = new BoxRenderable(ctx, {
       width,
@@ -44,7 +44,7 @@ export class TuiBillingWizard {
       width: "100%",
       height: "100%",
       paddingLeft: 2,
-      paddingTop: 1
+      paddingTop: 0 // No padding top to save vertical space
     });
     this.box.add(this.textElement);
 
@@ -54,16 +54,43 @@ export class TuiBillingWizard {
 
   private async renderCheckout(url: string) {
     try {
-      // Generate compact terminal ASCII QR code
-      const qrAscii = await QRCode.toString(url, {
-        type: "terminal",
-        small: true
-      });
+      const qr = QRCode.create(url);
+      const size = qr.modules.size;
+      
+      const qrLines: string[] = [];
+      for (let y = 0; y < size; y += 2) {
+        let line = "██"; // 2-module left quiet zone
+        for (let x = 0; x < size; x++) {
+          const top = qr.modules.get(x, y);
+          const bottom = y + 1 < size ? qr.modules.get(x, y + 1) : 0;
+          
+          if (top && bottom) {
+            line += " ";
+          } else if (top && !bottom) {
+            line += "▄";
+          } else if (!top && bottom) {
+            line += "▀";
+          } else {
+            line += "█";
+          }
+        }
+        line += "██"; // 2-module right quiet zone
+        qrLines.push(line);
+      }
 
-      // Split the QR code lines to pad them visually
-      const qrLines = qrAscii.split("\n").map(line => "   " + line).join("\n");
+      // Center the lines inside the 52-character inner width (56 - 2 borders - 2 padding)
+      const innerWidth = 52;
+      const qrWidth = size + 4; // size + 4 modules
+      const leftPad = Math.max(0, Math.floor((innerWidth - qrWidth) / 2));
+      const padStr = " ".repeat(leftPad);
+      
+      const paddedQrText = qrLines.map(line => padStr + line).join("\n");
+      const urlText = cyan(url);
 
-      this.textElement.content = `Scan QR Code to pay securely via Stripe:\n\n${qrLines}\n\nLink: \x1b[36m${url}\x1b[0m\n\nAwaiting payment verification... [ESC to cancel]`;
+      this.textElement.content = t`Scan QR Code to pay securely via Stripe:
+${paddedQrText}
+Link: ${urlText}
+Status: Awaiting payment... [ESC to cancel]`;
       this.ctx.requestRender();
     } catch (e: any) {
       this.textElement.content = `Error generating QR code: ${e.message}\n\nPlease click link: ${url}`;
